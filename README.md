@@ -134,3 +134,7 @@ Este projeto está disponível sob duas licenças:
    - Veja [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md) para mais informações.
 
 Ao contribuir para este projeto, você concorda que suas contribuições estarão disponíveis sob ambas as licenças.
+
+Este projeto utiliza várias bibliotecas de código aberto, cada uma com sua própria licença.
+O licenciamento dual (GPL/Comercial) aplica-se apenas ao código original deste projeto.
+As bibliotecas de terceiros continuam sob suas respectivas licenças originais.
