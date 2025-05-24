@@ -64,6 +64,11 @@ def processar_relatorio(filepath, relatorio_id):
         
         # Verificar se a ação já existe, se não, criar
         codigo_acao = row['Código de Negociação']
+        
+        # Remover a letra F do final do código da ação, se existir
+        if codigo_acao.endswith('F'):
+            codigo_acao = codigo_acao[:-1]
+            
         acao = Acao.query.filter_by(codigo=codigo_acao).first()
         if not acao:
             acao = Acao(codigo=codigo_acao)
