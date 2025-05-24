@@ -121,3 +121,16 @@ portfolio_acoes/
 - O sistema utiliza SQLite como banco de dados por padrão
 - Os relatórios enviados são armazenados na pasta "uploads"
 - Para ambientes de produção, recomenda-se configurar um banco de dados mais robusto
+
+## Licenciamento
+
+Este projeto está disponível sob duas licenças:
+
+1. **GNU General Public License v3.0** (GPL-3.0) - Para uso geral, desenvolvimento e contribuições da comunidade.
+   - Veja o arquivo [LICENSE.md](LICENSE.md) para detalhes.
+
+2. **Licença Comercial** - Para uso em aplicações proprietárias onde as condições da GPL-3.0 não são desejáveis.
+   - Para adquirir uma licença comercial, entre em contato através de [seu-email@exemplo.com]
+   - Veja [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md) para mais informações.
+
+Ao contribuir para este projeto, você concorda que suas contribuições estarão disponíveis sob ambas as licenças.
