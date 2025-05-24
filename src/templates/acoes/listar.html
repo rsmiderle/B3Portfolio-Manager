@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Ações</h1>
+    <p class="lead">Gerenciamento de ações e seus CNPJs.</p>
+    
+    <div class="mb-3">
+        <a href="{{ url_for('acoes.cadastrar') }}" class="btn btn-primary">Cadastrar Nova Ação</a>
+    </div>
+    
+    {% if acoes %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome da Empresa</th>
+                        <th>CNPJ</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for acao in acoes %}
+                        <tr>
+                            <td>{{ acao.codigo }}</td>
+                            <td>{{ acao.nome_empresa or 'Não informado' }}</td>
+                            <td>{{ acao.cnpj or 'Não informado' }}</td>
+                            <td>
+                                <a href="{{ url_for('acoes.editar', id=acao.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                {% if not acao.cnpj %}
+                                    <a href="{{ url_for('acoes.buscar_cnpj', codigo=acao.codigo) }}" class="btn btn-sm btn-outline-info">Buscar CNPJ</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Nenhuma ação cadastrada. Clique em "Cadastrar Nova Ação" para adicionar.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

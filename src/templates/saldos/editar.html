@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Editar Saldo e Preço Médio</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {{ form.csrf_token }}
+                <div class="mb-3">
+                    <label for="acao_id" class="form-label">Ação</label>
+                    {{ form.acao_id(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="data_base" class="form-label">Data Base</label>
+                    {{ form.data_base(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="quantidade" class="form-label">Quantidade</label>
+                    {{ form.quantidade(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="preco_medio" class="form-label">Preço Médio</label>
+                    {{ form.preco_medio(class="form-control") }}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('saldos.listar') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

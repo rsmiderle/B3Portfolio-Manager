@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Editar Corretagem</h1>
+    
+    <div class="alert alert-info">
+        <strong>Importante:</strong> O valor de corretagem informado será considerado no cálculo do preço médio de aquisição das ações. Para operações de compra, o valor da corretagem será adicionado ao custo total, aumentando o preço médio.
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Detalhes da Negociação</h5>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <strong>Data:</strong> {{ negociacao.data_negocio.strftime('%d/%m/%Y') }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Ação:</strong> {{ negociacao.acao.codigo }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Tipo:</strong> {{ negociacao.tipo_movimentacao }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Quantidade:</strong> {{ negociacao.quantidade }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <strong>Preço:</strong> R$ {{ "%.2f"|format(negociacao.preco) }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Valor:</strong> R$ {{ "%.2f"|format(negociacao.valor) }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Instituição:</strong> {{ negociacao.instituicao }}
+                </div>
+            </div>
+            
+            <form method="POST">
+                {{ form.csrf_token }}
+                {{ form.id }}
+                <div class="mb-3">
+                    <label for="corretagem" class="form-label">Valor de Corretagem</label>
+                    {{ form.corretagem(class="form-control", placeholder="Informe o valor de corretagem") }}
+                    <div class="form-text">Informe o valor de corretagem pago nesta operação.</div>
+                </div>
+                <div class="d-flex gap-2">
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('negociacoes.listar') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Relatório de Posição</h1>
+    <p class="lead">Posição das ações na data base: {{ data_base.strftime('%d/%m/%Y') }}</p>
+    
+    {% if resultado %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Quantidade</th>
+                        <th>Preço Médio</th>
+                        <th>Valor Total</th>
+                        <th>CNPJ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in resultado %}
+                        <tr>
+                            <td>{{ item.codigo }}</td>
+                            <td>{{ item.quantidade }}</td>
+                            <td>R$ {{ "%.2f"|format(item.preco_medio) }}</td>
+                            <td>R$ {{ "%.2f"|format(item.valor_total) }}</td>
+                            <td>{{ item.cnpj }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4">
+            <h3>Resumo da Posição</h3>
+            <div class="card">
+                <div class="card-body">
+                    {% for item in resultado %}
+                        <p><strong>{{ item.codigo }}</strong> - {{ item.quantidade }} x {{ "%.2f"|format(item.preco_medio) }} (PM)</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('main.gerar_relatorio') }}" class="btn btn-primary">Gerar Novo Relatório</a>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Voltar ao Início</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Não foram encontradas ações com saldo positivo na data base informada.
+        </div>
+        <a href="{{ url_for('main.gerar_relatorio') }}" class="btn btn-primary">Tentar Outra Data</a>
+    {% endif %}
+</div>
+{% endblock %}

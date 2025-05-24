@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Gerar Relatório de Posição</h1>
+    <p class="lead">Informe a data base para gerar o relatório de posição das ações.</p>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-3">
+                    <label for="data_base" class="form-label">Data Base</label>
+                    <input type="date" class="form-control" id="data_base" name="data_base" required>
+                    <div class="form-text">Selecione a data para a qual deseja calcular a posição das ações.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

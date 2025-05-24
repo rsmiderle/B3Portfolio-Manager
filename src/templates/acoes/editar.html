@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Editar Ação</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {{ form.csrf_token }}
+                <div class="mb-3">
+                    <label for="codigo" class="form-label">Código da Ação</label>
+                    {{ form.codigo(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="nome_empresa" class="form-label">Nome da Empresa</label>
+                    {{ form.nome_empresa(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="cnpj" class="form-label">CNPJ</label>
+                    {{ form.cnpj(class="form-control") }}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('acoes.listar') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

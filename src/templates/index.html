@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>B3 Portfolio Manager</h1>
+    <p class="lead">Bem-vindo ao sistema de gerenciamento de portfólio de ações da B3.</p>
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Relatórios B3</h5>
+                    <p class="card-text">Faça upload de relatórios de negociações da B3.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('relatorios.upload') }}" class="btn btn-primary">Upload de Relatório</a>
+                        <a href="{{ url_for('relatorios.listar') }}" class="btn btn-outline-secondary">Listar Relatórios</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ações</h5>
+                    <p class="card-text">Gerencie o cadastro de ações e seus CNPJs.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('acoes.cadastrar') }}" class="btn btn-primary">Cadastrar Ação</a>
+                        <a href="{{ url_for('acoes.listar') }}" class="btn btn-outline-secondary">Listar Ações</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Saldos e Preços Médios</h5>
+                    <p class="card-text">Cadastre saldos e preços médios para datas base.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('saldos.cadastrar') }}" class="btn btn-primary">Cadastrar Saldo</a>
+                        <a href="{{ url_for('saldos.listar') }}" class="btn btn-outline-secondary">Listar Saldos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Gerar Relatório de Posição</h5>
+                    <p class="card-text">Gere um relatório da sua posição de ações em uma data base específica.</p>
+                    <a href="{{ url_for('main.gerar_relatorio') }}" class="btn btn-success">Gerar Relatório</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Manutenção de Negociações</h5>
+                    <p class="card-text">Informe valores de corretagem para as negociações importadas.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('negociacoes.listar') }}" class="btn btn-primary">Gerenciar Corretagens</a>
+                        <a href="{{ url_for('negociacoes.listar', sem_corretagem='true') }}" class="btn btn-outline-secondary">Ver Pendentes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
