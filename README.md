@@ -2,7 +2,11 @@
 
 ## Visão Geral
 
-Este sistema foi desenvolvido para gerenciar um portfólio de ações com base em relatórios de negociações da B3. O sistema permite:
+Este sistema foi 100% desenvolvido com uso de IA generativa e tem como objetivo ajudar o usuário a gerenciar um portfólio de ações e automatizar os cálculos para declaração do IRPF com base em relatórios de negociações da B3.
+Nenhuma linha de código foi escrita por mim nessa primeira versão. Todo o código foi gerado por IA como parte de uma prova de conceito particular minha. 
+Também pretendo evoluir o produto e realizar correções utilizando apenas ferramentas de IA. 
+
+O sistema permite:
 
 1. Upload de relatórios de negociações da B3 em formato Excel (.xlsx)
 2. Cadastro de saldos e preços médios de ações em datas base específicas
