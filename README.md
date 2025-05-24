@@ -2,7 +2,11 @@
 
 ## Visão Geral
 
-Este sistema foi desenvolvido para gerenciar um portfólio de ações com base em relatórios de negociações da B3. O sistema permite:
+Este sistema foi 100% desenvolvido com uso de IA generativa e tem como objetivo ajudar o usuário a gerenciar um portfólio de ações e automatizar os cálculos para declaração do IRPF com base em relatórios de negociações da B3.
+Nenhuma linha de código foi escrita por mim nessa primeira versão. Todo o código foi gerado por IA como parte de uma prova de conceito particular minha. 
+Também pretendo evoluir o produto e realizar correções utilizando apenas ferramentas de IA. 
+
+O sistema permite:
 
 1. Upload de relatórios de negociações da B3 em formato Excel (.xlsx)
 2. Cadastro de saldos e preços médios de ações em datas base específicas
@@ -117,3 +121,22 @@ portfolio_acoes/
 - O sistema utiliza SQLite como banco de dados por padrão
 - Os relatórios enviados são armazenados na pasta "uploads"
 - Para ambientes de produção, recomenda-se configurar um banco de dados mais robusto
+
+## Licenciamento
+
+Este projeto está disponível sob duas licenças:
+
+1. **GNU General Public License v3.0** (GPL-3.0) - Para uso geral, desenvolvimento e contribuições da comunidade.
+   - Veja o arquivo [LICENSE.md](LICENSE.md) para detalhes.
+
+2. **Licença Comercial** - Para uso em aplicações proprietárias onde as condições da GPL-3.0 não são desejáveis.
+   - Para adquirir uma licença comercial, entre em contato através de [seu-email@exemplo.com]
+   - Veja [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md) para mais informações.
+
+Ao contribuir para este projeto, você concorda que suas contribuições estarão disponíveis sob ambas as licenças.
+
+Este projeto utiliza várias bibliotecas de código aberto, cada uma com sua própria licença.
+O licenciamento dual (GPL/Comercial) aplica-se apenas ao código original deste projeto.
+As bibliotecas de terceiros continuam sob suas respectivas licenças originais.
+Veja o arquivo NOTICES.md para detalhes sobre as licenças de terceiros.
+
