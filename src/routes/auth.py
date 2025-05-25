@@ -33,9 +33,9 @@ def on_load(state):
 @auth_bp.route('/login')
 def login():
     # Redirecionar para o Google OAuth
-    redirect_uri = url_for('auth.callback', _external=True)
+    # Forçar HTTPS no URL de redirecionamento
+    redirect_uri = url_for('auth.callback', _external=True, _scheme='https')
     print(f"URI de redirecionamento: {redirect_uri}")  # Para depuração
-
     return oauth.google.authorize_redirect(redirect_uri)
 
 @auth_bp.route('/callback')
