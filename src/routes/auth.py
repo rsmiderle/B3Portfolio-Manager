@@ -2,8 +2,12 @@ from flask import Blueprint, redirect, url_for, session, request, current_app, f
 from flask_login import login_user, logout_user, login_required, current_user
 from authlib.integrations.flask_client import OAuth
 import os
+import urllib3
 from src.models import db
 from src.models.all_models import User
+
+# Desabilitar avisos de SSL para evitar erros em requisições
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -20,7 +24,10 @@ def on_load(state):
         client_id=os.getenv('GOOGLE_CLIENT_ID'),
         client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-        client_kwargs={'scope': 'openid email profile'},
+        client_kwargs={
+            'scope': 'openid email profile',
+            'verify': False  # Desabilitar verificação SSL para ambiente de desenvolvimento
+        },
     )
 
 @auth_bp.route('/login')
