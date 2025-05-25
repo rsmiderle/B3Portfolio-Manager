@@ -1,7 +1,7 @@
 # Dockerfile (Reiterando a versão correta e mais adequada)
 
 # 1. Usar uma imagem base oficial do Python.
-FROM python:3.9-slim # Ou a versão Python que você usa
+FROM python:3.9-slim 
 
 # 2. Definir variáveis de ambiente úteis
 ENV PYTHONDONTWRITEBYTECODE 1
