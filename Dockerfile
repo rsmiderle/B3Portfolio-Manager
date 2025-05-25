@@ -31,4 +31,5 @@ EXPOSE 5000
 # Se PORT não estiver definida (como ao rodar localmente com docker run),
 # você pode definir um padrão, ou o Gunicorn usará 8000 por padrão se nenhuma porta for especificada no bind.
 # Para alinhar com o seu run.py, vamos usar 5000 como padrão, mas permitir que $PORT a substitua.
-CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-5000}", "--workers", "2", "src.main:create_app()"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-5000}", "--workers", "2", "src.main:create_app()"]
+CMD gunicorn --bind "0.0.0.0:${PORT:-5000}" --workers 2 "src.main:create_app()"
