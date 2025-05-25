@@ -34,6 +34,8 @@ def on_load(state):
 def login():
     # Redirecionar para o Google OAuth
     redirect_uri = url_for('auth.callback', _external=True)
+    print(f"URI de redirecionamento: {redirect_uri}")  # Para depuração
+
     return oauth.google.authorize_redirect(redirect_uri)
 
 @auth_bp.route('/callback')
