@@ -1,6 +1,8 @@
 import os
 import urllib3
 from dotenv import load_dotenv
+from flask import Flask
+from flask.cli import FlaskGroup
 from src.main import create_app
 
 # Carregar variáveis de ambiente do arquivo .env, se existir
@@ -21,6 +23,7 @@ if not os.environ.get('GOOGLE_CLIENT_ID') or not os.environ.get('GOOGLE_CLIENT_S
     print("Consulte o arquivo GOOGLE_AUTH_SETUP.md para instruções de configuração.")
 
 app = create_app()
+cli = FlaskGroup(create_app=create_app)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

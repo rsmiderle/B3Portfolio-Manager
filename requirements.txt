@@ -8,6 +8,7 @@ Flask==3.1.1
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.2
 flask-login
+Flask-Migrate==4.0.5
 greenlet==3.2.2
 idna==3.10
 itsdangerous==2.2.0

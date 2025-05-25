@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
 from flask_login import LoginManager, current_user, login_required
+from flask_migrate import Migrate
 from wtforms import StringField, DateField, FloatField, IntegerField, SubmitField, FileField
 from wtforms.validators import DataRequired, Optional
 import os
@@ -29,6 +30,9 @@ def create_app():
     # Inicializar extensões
     db.init_app(app)
     csrf = CSRFProtect(app)
+    
+    # Inicializar Flask-Migrate
+    migrate = Migrate(app, db)
     
     # Configurar Login Manager
     login_manager = LoginManager()
@@ -58,8 +62,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(test_bp)
     
-    # Criar tabelas do banco de dados
-    with app.app_context():
-        db.create_all()
+    # Não criamos mais as tabelas diretamente aqui
+    # As migrações serão responsáveis por isso
     
     return app
