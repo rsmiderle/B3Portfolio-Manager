@@ -32,9 +32,9 @@ def on_load(state):
 
 @auth_bp.route('/login')
 def login():
-    # Redirecionar para o Google OAuth
-    # Forçar HTTPS no URL de redirecionamento
-    redirect_uri = url_for('auth.callback', _external=True, _scheme='https')
+    # Detectar ambiente e usar o esquema apropriado
+    scheme = 'https' if not current_app.debug or request.headers.get('X-Forwarded-Proto') == 'https' else 'http'
+    redirect_uri = url_for('auth.callback', _external=True, _scheme=scheme)
     print(f"URI de redirecionamento: {redirect_uri}")  # Para depuração
     return oauth.google.authorize_redirect(redirect_uri)
 

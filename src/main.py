@@ -17,6 +17,12 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
     
+    # Configuração condicional de URL scheme baseada no ambiente
+    if os.environ.get('FLASK_ENV') == 'production' or not app.debug:
+        app.config['PREFERRED_URL_SCHEME'] = 'https'
+    else:
+        app.config['PREFERRED_URL_SCHEME'] = 'http'
+    
     # Garantir que a pasta de uploads exista
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
