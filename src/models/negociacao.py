@@ -18,6 +18,7 @@ class Negociacao(db.Model):
     # Chaves estrangeiras
     acao_id = db.Column(db.Integer, db.ForeignKey('acoes.id'), nullable=False)
     relatorio_id = db.Column(db.Integer, db.ForeignKey('relatorios.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
     def __repr__(self):
         return f'<Negociacao {self.acao_id} {self.tipo_movimentacao} {self.data_negocio}>'

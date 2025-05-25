@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Validação de Isolamento de Dados</h2>
+    
+    <div class="alert alert-info">
+        <p>Esta página verifica se o isolamento de dados entre usuários está funcionando corretamente.</p>
+        <p>Cada usuário deve ver apenas seus próprios dados em todas as seções do sistema.</p>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Resultados da Validação</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Entidade</th>
+                        <th>Status</th>
+                        <th>Mensagem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entity, result in results.items() %}
+                    <tr>
+                        <td>{{ entity|capitalize }}</td>
+                        <td>
+                            {% if result.status == 'OK' %}
+                            <span class="badge bg-success">{{ result.status }}</span>
+                            {% else %}
+                            <span class="badge bg-danger">{{ result.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ result.message }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Voltar para Início</a>
+    </div>
+</div>
+{% endblock %}

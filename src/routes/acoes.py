@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_wtf import FlaskForm
+from flask_login import login_required, current_user
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from src.models import db
@@ -16,22 +17,25 @@ class AcaoForm(FlaskForm):
     submit = SubmitField('Salvar')
 
 @acoes_bp.route('/', methods=['GET'])
+@login_required
 def listar():
-    acoes = Acao.query.all()
+    acoes = Acao.query.filter_by(user_id=current_user.id).all()
     return render_template('acoes/listar.html', acoes=acoes)
 
 @acoes_bp.route('/cadastrar', methods=['GET', 'POST'])
+@login_required
 def cadastrar():
     form = AcaoForm()
     if form.validate_on_submit():
         acao = Acao(
             codigo=form.codigo.data.upper(),
             cnpj=form.cnpj.data,
-            nome_empresa=form.nome_empresa.data
+            nome_empresa=form.nome_empresa.data,
+            user_id=current_user.id
         )
         
-        # Verificar se já existe
-        acao_existente = Acao.query.filter_by(codigo=acao.codigo).first()
+        # Verificar se já existe para este usuário
+        acao_existente = Acao.query.filter_by(codigo=acao.codigo, user_id=current_user.id).first()
         if acao_existente:
             flash(f'A ação {acao.codigo} já está cadastrada!', 'warning')
             return redirect(url_for('acoes.listar'))
@@ -44,8 +48,9 @@ def cadastrar():
     return render_template('acoes/cadastrar.html', form=form)
 
 @acoes_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar(id):
-    acao = Acao.query.get_or_404(id)
+    acao = Acao.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = AcaoForm(obj=acao)
     
     if form.validate_on_submit():
@@ -60,6 +65,7 @@ def editar(id):
     return render_template('acoes/editar.html', form=form, acao=acao)
 
 @acoes_bp.route('/buscar_cnpj/<codigo>')
+@login_required
 def buscar_cnpj(codigo):
     """Função para buscar CNPJ de uma ação na internet"""
     try:

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_wtf import FlaskForm
+from flask_login import login_required, current_user
 from wtforms import FileField, SubmitField
 from wtforms.validators import DataRequired
 from werkzeug.utils import secure_filename
@@ -16,11 +17,13 @@ class RelatorioForm(FlaskForm):
     submit = SubmitField('Enviar')
 
 @relatorios_bp.route('/', methods=['GET'])
+@login_required
 def listar():
-    relatorios = Relatorio.query.order_by(Relatorio.data_upload.desc()).all()
+    relatorios = Relatorio.query.filter_by(user_id=current_user.id).order_by(Relatorio.data_upload.desc()).all()
     return render_template('relatorios/listar.html', relatorios=relatorios)
 
 @relatorios_bp.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload():
     form = RelatorioForm()
     if form.validate_on_submit():
@@ -31,7 +34,10 @@ def upload():
             arquivo.save(filepath)
             
             # Criar registro do relatório
-            relatorio = Relatorio(nome_arquivo=filename)
+            relatorio = Relatorio(
+                nome_arquivo=filename,
+                user_id=current_user.id
+            )
             db.session.add(relatorio)
             db.session.commit()
             
@@ -53,6 +59,9 @@ def processar_relatorio(filepath, relatorio_id):
     # Ler o arquivo Excel
     df = pd.read_excel(filepath)
     
+    # Obter o relatório para acessar o user_id
+    relatorio = Relatorio.query.get(relatorio_id)
+    
     # Processar cada linha do relatório
     for _, row in df.iterrows():
         # Converter a data para o formato correto
@@ -69,9 +78,12 @@ def processar_relatorio(filepath, relatorio_id):
         if codigo_acao.endswith('F'):
             codigo_acao = codigo_acao[:-1]
             
-        acao = Acao.query.filter_by(codigo=codigo_acao).first()
+        acao = Acao.query.filter_by(codigo=codigo_acao, user_id=relatorio.user_id).first()
         if not acao:
-            acao = Acao(codigo=codigo_acao)
+            acao = Acao(
+                codigo=codigo_acao,
+                user_id=relatorio.user_id
+            )
             db.session.add(acao)
             db.session.commit()
         
@@ -86,7 +98,8 @@ def processar_relatorio(filepath, relatorio_id):
             preco=row['Preço'],
             valor=row['Valor'],
             acao_id=acao.id,
-            relatorio_id=relatorio_id
+            relatorio_id=relatorio_id,
+            user_id=relatorio.user_id
         )
         
         db.session.add(negociacao)
@@ -94,7 +107,8 @@ def processar_relatorio(filepath, relatorio_id):
     db.session.commit()
 
 @relatorios_bp.route('/detalhes/<int:id>', methods=['GET'])
+@login_required
 def detalhes(id):
-    relatorio = Relatorio.query.get_or_404(id)
-    negociacoes = Negociacao.query.filter_by(relatorio_id=id).all()
+    relatorio = Relatorio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    negociacoes = Negociacao.query.filter_by(relatorio_id=id, user_id=current_user.id).all()
     return render_template('relatorios/detalhes.html', relatorio=relatorio, negociacoes=negociacoes)

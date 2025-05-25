@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
+from flask_login import login_required, current_user
 from wtforms import DateField, FloatField, IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
 from src.models import db
@@ -16,21 +17,30 @@ class SaldoPrecoMedioForm(FlaskForm):
     submit = SubmitField('Salvar')
 
 @saldos_bp.route('/', methods=['GET'])
+@login_required
 def listar():
-    saldos = SaldoPrecoMedio.query.order_by(SaldoPrecoMedio.data_base.desc()).all()
+    saldos = SaldoPrecoMedio.query.filter_by(user_id=current_user.id).order_by(SaldoPrecoMedio.data_base.desc()).all()
     return render_template('saldos/listar.html', saldos=saldos)
 
 @saldos_bp.route('/cadastrar', methods=['GET', 'POST'])
+@login_required
 def cadastrar():
     form = SaldoPrecoMedioForm()
-    # Preencher as opções do dropdown de ações
-    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.order_by(Acao.codigo).all()]
+    # Preencher as opções do dropdown de ações - apenas ações do usuário atual
+    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.filter_by(user_id=current_user.id).order_by(Acao.codigo).all()]
     
     if form.validate_on_submit():
-        # Verificar se já existe um saldo para esta ação nesta data
+        # Verificar se a ação pertence ao usuário atual
+        acao = Acao.query.filter_by(id=form.acao_id.data, user_id=current_user.id).first()
+        if not acao:
+            flash('Ação não encontrada ou não pertence ao seu cadastro!', 'danger')
+            return redirect(url_for('saldos.listar'))
+            
+        # Verificar se já existe um saldo para esta ação nesta data para este usuário
         saldo_existente = SaldoPrecoMedio.query.filter_by(
             acao_id=form.acao_id.data,
-            data_base=form.data_base.data
+            data_base=form.data_base.data,
+            user_id=current_user.id
         ).first()
         
         if saldo_existente:
@@ -41,7 +51,8 @@ def cadastrar():
             acao_id=form.acao_id.data,
             data_base=form.data_base.data,
             quantidade=form.quantidade.data,
-            preco_medio=form.preco_medio.data
+            preco_medio=form.preco_medio.data,
+            user_id=current_user.id
         )
         
         db.session.add(saldo)
@@ -52,17 +63,27 @@ def cadastrar():
     return render_template('saldos/cadastrar.html', form=form)
 
 @saldos_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar(id):
-    saldo = SaldoPrecoMedio.query.get_or_404(id)
+    # Garantir que o saldo pertence ao usuário atual
+    saldo = SaldoPrecoMedio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = SaldoPrecoMedioForm(obj=saldo)
-    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.order_by(Acao.codigo).all()]
+    # Mostrar apenas ações do usuário atual
+    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.filter_by(user_id=current_user.id).order_by(Acao.codigo).all()]
     
     if form.validate_on_submit():
+        # Verificar se a ação pertence ao usuário atual
+        acao = Acao.query.filter_by(id=form.acao_id.data, user_id=current_user.id).first()
+        if not acao:
+            flash('Ação não encontrada ou não pertence ao seu cadastro!', 'danger')
+            return redirect(url_for('saldos.listar'))
+            
         # Verificar se já existe outro saldo para esta ação nesta data (exceto o atual)
         saldo_existente = SaldoPrecoMedio.query.filter(
             SaldoPrecoMedio.acao_id == form.acao_id.data,
             SaldoPrecoMedio.data_base == form.data_base.data,
-            SaldoPrecoMedio.id != id
+            SaldoPrecoMedio.id != id,
+            SaldoPrecoMedio.user_id == current_user.id
         ).first()
         
         if saldo_existente:
@@ -81,8 +102,10 @@ def editar(id):
     return render_template('saldos/editar.html', form=form, saldo=saldo)
 
 @saldos_bp.route('/excluir/<int:id>', methods=['POST'])
+@login_required
 def excluir(id):
-    saldo = SaldoPrecoMedio.query.get_or_404(id)
+    # Garantir que o saldo pertence ao usuário atual
+    saldo = SaldoPrecoMedio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(saldo)
     db.session.commit()
     flash('Saldo excluído com sucesso!', 'success')

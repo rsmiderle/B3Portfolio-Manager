@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
+from flask_login import login_required, current_user
 from wtforms import FloatField, HiddenField, BooleanField, SubmitField
 from wtforms.validators import Optional
 from src.models import db
@@ -13,12 +14,13 @@ class NegociacaoForm(FlaskForm):
     submit = SubmitField('Salvar')
 
 @negociacoes_bp.route('/', methods=['GET'])
+@login_required
 def listar():
     # Parâmetro para filtrar apenas negociações sem corretagem
     filtro_sem_corretagem = request.args.get('sem_corretagem', 'false') == 'true'
     
-    # Consulta base
-    query = Negociacao.query.join(Acao, Negociacao.acao_id == Acao.id)
+    # Consulta base - filtrar apenas negociações do usuário atual
+    query = Negociacao.query.join(Acao, Negociacao.acao_id == Acao.id).filter(Negociacao.user_id == current_user.id)
     
     # Aplicar filtro se solicitado
     if filtro_sem_corretagem:
@@ -32,8 +34,10 @@ def listar():
                           filtro_sem_corretagem=filtro_sem_corretagem)
 
 @negociacoes_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar(id):
-    negociacao = Negociacao.query.get_or_404(id)
+    # Garantir que a negociação pertence ao usuário atual
+    negociacao = Negociacao.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     form = NegociacaoForm(obj=negociacao)
     
     if form.validate_on_submit():

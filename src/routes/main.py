@@ -1,10 +1,14 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from src.models import db
-from src.models.all_models import Acao, Negociacao, SaldoPrecoMedio
-from datetime import datetime
+from flask_wtf import FlaskForm
+from flask_login import login_required, current_user
+from wtforms import DateField, SubmitField
+from wtforms.validators import DataRequired
 import requests
 from bs4 import BeautifulSoup
 import re
+from datetime import datetime
+from src.models import db
+from src.models.all_models import Acao, Negociacao, SaldoPrecoMedio
 
 main_bp = Blueprint('main', __name__)
 
@@ -12,19 +16,17 @@ main_bp = Blueprint('main', __name__)
 def index():
     return render_template('index.html')
 
+class RelatorioForm(FlaskForm):
+    data_base = DateField('Data Base', validators=[DataRequired()])
+    submit = SubmitField('Gerar Relatório')
+
 @main_bp.route('/gerar_relatorio', methods=['GET', 'POST'])
+@login_required
 def gerar_relatorio():
-    if request.method == 'POST':
-        data_base_str = request.form.get('data_base')
-        try:
-            data_base = datetime.strptime(data_base_str, '%Y-%m-%d').date()
-        except ValueError:
-            flash('Data inválida. Use o formato YYYY-MM-DD.', 'danger')
-            return redirect(url_for('main.gerar_relatorio'))
-        
-        # Calcular saldo e preço médio para cada ação na data base
+    form = RelatorioForm()
+    if form.validate_on_submit():
+        data_base = form.data_base.data
         resultado = calcular_posicao_na_data(data_base)
-        
         return render_template('relatorio_resultado.html', 
                               resultado=resultado, 
                               data_base=data_base)
@@ -48,14 +50,16 @@ def calcular_posicao_na_data(data_base):
         db.or_(
             Negociacao.id != None,
             SaldoPrecoMedio.id != None
-        )
+        ),
+        Acao.user_id == current_user.id  # Filtrar apenas ações do usuário atual
     ).distinct().all()
     
     for acao in acoes:
         # Buscar o saldo mais recente cadastrado antes da data base
         saldo_cadastrado = SaldoPrecoMedio.query.filter(
             SaldoPrecoMedio.acao_id == acao.id,
-            SaldoPrecoMedio.data_base <= data_base
+            SaldoPrecoMedio.data_base <= data_base,
+            SaldoPrecoMedio.user_id == current_user.id  # Filtrar apenas saldos do usuário atual
         ).order_by(SaldoPrecoMedio.data_base.desc()).first()
         
         data_inicial = None
@@ -70,7 +74,8 @@ def calcular_posicao_na_data(data_base):
         # Buscar todas as negociações entre a data inicial e a data base
         negociacoes = Negociacao.query.filter(
             Negociacao.acao_id == acao.id,
-            Negociacao.data_negocio <= data_base
+            Negociacao.data_negocio <= data_base,
+            Negociacao.user_id == current_user.id  # Filtrar apenas negociações do usuário atual
         )
         
         if data_inicial:
@@ -138,24 +143,28 @@ def calcular_posicao_na_data(data_base):
 def buscar_cnpj_online(codigo_acao):
     """Busca o CNPJ da ação na internet"""
     try:
+        # Desabilitar verificação de SSL para evitar erros
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        
+        # Fazer a busca no Google
         url = f"https://www.google.com/search?q=cnpj+{codigo_acao}+b3+bovespa"
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
-        # Desabilitar verificação de SSL para contornar o problema de certificado
         response = requests.get(url, headers=headers, verify=False)
-        soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Busca por padrões de CNPJ (XX.XXX.XXX/XXXX-XX)
-        text = soup.get_text()
-        cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
-        cnpj_matches = re.findall(cnpj_pattern, text)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Procurar por padrões de CNPJ (XX.XXX.XXX/XXXX-XX)
+            text = soup.get_text()
+            cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
+            cnpj_matches = re.findall(cnpj_pattern, text)
+            
+            if cnpj_matches:
+                return cnpj_matches[0]
         
-        if cnpj_matches:
-            return cnpj_matches[0]
-        else:
-            return "CNPJ não encontrado"
+        return "CNPJ não encontrado"
     except Exception as e:
-        # Fallback para não interromper o fluxo do sistema
-        print(f"Erro ao buscar CNPJ: {str(e)}")
-        return "CNPJ não disponível"
+        return f"Erro ao buscar CNPJ: {str(e)}"

@@ -16,6 +16,21 @@
             height: 40px;
             margin-right: 10px;
         }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .profile-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .google-icon {
+            height: 18px;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -29,7 +44,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.index') }}">Início</a>
                     </li>
@@ -43,9 +59,33 @@
                         <a class="nav-link" href="{{ url_for('saldos.listar') }}">Saldos</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('negociacoes.listar') }}">Corretagens</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.gerar_relatorio') }}">Gerar Relatório</a>
                     </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Início</a>
+                    </li>
+                    {% endif %}
                 </ul>
+                <div class="d-flex">
+                    {% if current_user.is_authenticated %}
+                    <div class="user-profile">
+                        {% if current_user.profile_pic %}
+                        <img src="{{ current_user.profile_pic }}" alt="Foto de perfil" class="profile-pic">
+                        {% endif %}
+                        <span class="text-light">{{ current_user.name }}</span>
+                    </div>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light">Sair</a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-icon">
+                        Entrar com Google
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
