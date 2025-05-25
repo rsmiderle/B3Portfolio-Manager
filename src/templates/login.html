@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 text-center">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="B3 Portfolio Manager Logo" class="img-fluid mb-4" style="max-height: 150px;">
+            <h1 class="mb-4">B3 Portfolio Manager</h1>
+            <p class="lead mb-5">Gerencie seu portfólio de ações da B3 de forma simples e eficiente.</p>
+            
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-icon">
+                    Entrar com Google
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

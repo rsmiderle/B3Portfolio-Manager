@@ -6,6 +6,11 @@ from src.main import create_app
 # Carregar variáveis de ambiente do arquivo .env, se existir
 load_dotenv()
 
+# Usar variáveis de ambiente (funcionará tanto com .env quanto com Cloud Run)
+google_client_id = os.environ.get('GOOGLE_CLIENT_ID')
+google_client_secret = os.environ.get('GOOGLE_CLIENT_SECRET')
+secret_key = os.environ.get('SECRET_KEY')
+
 # Desabilitar avisos de SSL para evitar erros em requisições
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

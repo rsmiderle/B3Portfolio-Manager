@@ -14,8 +14,7 @@ class SaldoPrecoMedio(db.Model):
     acao_id = db.Column(db.Integer, db.ForeignKey('acoes.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
-    def __repr__(self):
-        return f'<SaldoPrecoMedio {self.acao_id} {self.data_base}>'mposto para garantir unicidade de ação por data base
+    # Comentário: Imposto para garantir unicidade de ação por data base
     __table_args__ = (
         db.UniqueConstraint('acao_id', 'data_base', name='uix_acao_data_base'),
     )

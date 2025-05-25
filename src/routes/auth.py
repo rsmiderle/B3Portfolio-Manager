@@ -54,8 +54,8 @@ def callback():
         login_user(user)
         flash('Login realizado com sucesso!', 'success')
         
-        # Redirecionar para a página inicial
-        return redirect(url_for('main.index'))
+        # Redirecionar para o dashboard após login bem-sucedido
+        return redirect(url_for('main.dashboard'))
     
     flash('Falha ao realizar login. Tente novamente.', 'danger')
     return redirect(url_for('main.index'))

@@ -1,1 +1,64 @@
+# Arquivos de ambiente
 .env
+.env.local
+.env.*.local
+
+# Diretórios de ambiente virtual
+venv/
+env/
+ENV/
+.venv/
+
+# Diretório instance do Flask
+instance/
+
+# Arquivos de banco de dados SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Arquivos de distribuição / empacotamento
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Arquivos de log
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.swp
+*~
+
+# Arquivos de IDE e editores
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Arquivos de configuração local
+config.local.py
+
+# Arquivos de sessão
+flask_session/
+
+# Arquivos de mídia e uploads
+uploads/
+media/
+
+# Arquivos de certificado
+*.pem
+*.key
+*.crt

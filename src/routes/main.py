@@ -14,7 +14,14 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    return render_template('index.html')
+    if current_user.is_authenticated:
+        return render_template('dashboard.html')
+    return render_template('login.html')
+
+@main_bp.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 class RelatorioForm(FlaskForm):
     data_base = DateField('Data Base', validators=[DataRequired()])
