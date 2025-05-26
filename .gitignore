@@ -12,6 +12,9 @@ ENV/
 # Diretório instance do Flask
 instance/
 
+# Diretório de migrações do Flask-Migrate
+migrations/
+
 # Arquivos de banco de dados SQLite
 *.db
 *.sqlite

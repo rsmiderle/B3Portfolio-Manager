@@ -31,21 +31,25 @@ cli = FlaskGroup(create_app=create_app)
 def init_db():
     """Inicializa o banco de dados automaticamente executando as migrações"""
     with app.app_context():
+        # Definir variáveis de ambiente para os comandos Flask
+        env = os.environ.copy()
+        env['FLASK_APP'] = 'run.py'
+        
         # Verificar se o diretório de migrações existe
         migrations_dir = os.path.join(os.path.dirname(__file__), 'migrations')
         if not os.path.exists(migrations_dir):
             print("Inicializando repositório de migrações...")
-            subprocess.run(["flask", "db", "init"], check=True)
+            subprocess.run(["flask", "db", "init"], env=env, check=True)
             
         # Verificar se há arquivos de migração
         versions_dir = os.path.join(migrations_dir, 'versions')
         if not os.path.exists(versions_dir) or not os.listdir(versions_dir):
             print("Criando migração inicial...")
-            subprocess.run(["flask", "db", "migrate", "-m", "Migração inicial automática"], check=True)
+            subprocess.run(["flask", "db", "migrate", "-m", "Migração inicial automática"], env=env, check=True)
         
         # Aplicar migrações pendentes
         print("Aplicando migrações pendentes...")
-        subprocess.run(["flask", "db", "upgrade"], check=True)
+        subprocess.run(["flask", "db", "upgrade"], env=env, check=True)
         print("Banco de dados inicializado com sucesso!")
 
 if __name__ == '__main__':
