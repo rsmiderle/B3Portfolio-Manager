@@ -14,7 +14,32 @@ from src.models.all_models import Acao, Negociacao, Relatorio, SaldoPrecoMedio, 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24))
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portfolio.db'
+    
+    # Configuração condicional do banco de dados baseada no ambiente
+    if os.environ.get('DB_USE_MYSQL', 'False').lower() == 'true':
+        # Configuração para MySQL (Google Cloud SQL)
+        db_user = os.environ.get('DB_USER', 'root')
+        db_password = os.environ.get('DB_PASSWORD', '')
+        db_host = os.environ.get('DB_HOST', '127.0.0.1')
+        db_port = os.environ.get('DB_PORT', '3306')
+        db_name = os.environ.get('DB_NAME', 'portfolio')
+        
+        # Construir URI de conexão MySQL
+        app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+        
+        # Configurações adicionais para MySQL
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'pool_size': 5,
+            'pool_timeout': 30,
+            'pool_recycle': 1800,  # Reconectar após 30 minutos
+        }
+        
+        print(f"Usando MySQL em {db_host}:{db_port}/{db_name}")
+    else:
+        # Configuração para SQLite (desenvolvimento local)
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portfolio.db'
+        print("Usando SQLite para desenvolvimento local")
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
     

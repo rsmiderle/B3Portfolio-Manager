@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 from src.models import db
 from src.models.all_models import Relatorio, Negociacao, Acao
 
@@ -43,8 +44,12 @@ def upload():
             
             # Processar o arquivo
             try:
-                processar_relatorio(filepath, relatorio.id)
-                flash('Relatório enviado e processado com sucesso!', 'success')
+                negociacoes_processadas, negociacoes_ignoradas = processar_relatorio(filepath, relatorio.id)
+                
+                if negociacoes_ignoradas > 0:
+                    flash(f'Relatório processado com sucesso! {negociacoes_processadas} negociações importadas, {negociacoes_ignoradas} negociações ignoradas por duplicidade.', 'success')
+                else:
+                    flash(f'Relatório processado com sucesso! {negociacoes_processadas} negociações importadas.', 'success')
             except Exception as e:
                 db.session.delete(relatorio)
                 db.session.commit()
@@ -55,12 +60,20 @@ def upload():
     return render_template('relatorios/upload.html', form=form)
 
 def processar_relatorio(filepath, relatorio_id):
-    """Processa o arquivo de relatório da B3 e salva as negociações no banco de dados"""
+    """
+    Processa o arquivo de relatório da B3 e salva as negociações no banco de dados
+    
+    Returns:
+        tuple: (negociacoes_processadas, negociacoes_ignoradas)
+    """
     # Ler o arquivo Excel
     df = pd.read_excel(filepath)
     
     # Obter o relatório para acessar o user_id
     relatorio = Relatorio.query.get(relatorio_id)
+    
+    negociacoes_processadas = 0
+    negociacoes_ignoradas = 0
     
     # Processar cada linha do relatório
     for _, row in df.iterrows():
@@ -102,9 +115,17 @@ def processar_relatorio(filepath, relatorio_id):
             user_id=relatorio.user_id
         )
         
-        db.session.add(negociacao)
+        # Tentar adicionar a negociação, ignorando se já existir uma idêntica
+        try:
+            db.session.add(negociacao)
+            db.session.commit()
+            negociacoes_processadas += 1
+        except IntegrityError:
+            # Se ocorrer erro de integridade (duplicidade), fazer rollback e continuar
+            db.session.rollback()
+            negociacoes_ignoradas += 1
     
-    db.session.commit()
+    return negociacoes_processadas, negociacoes_ignoradas
 
 @relatorios_bp.route('/detalhes/<int:id>', methods=['GET'])
 @login_required
@@ -112,3 +133,24 @@ def detalhes(id):
     relatorio = Relatorio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     negociacoes = Negociacao.query.filter_by(relatorio_id=id, user_id=current_user.id).all()
     return render_template('relatorios/detalhes.html', relatorio=relatorio, negociacoes=negociacoes)
+
+@relatorios_bp.route('/excluir/<int:id>', methods=['POST'])
+@login_required
+def excluir(id):
+    """
+    Exclui um relatório e todas as negociações associadas a ele
+    """
+    relatorio = Relatorio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    
+    # Obter o número de negociações que serão excluídas para feedback ao usuário
+    num_negociacoes = Negociacao.query.filter_by(relatorio_id=id).count()
+    
+    # Armazenar o nome do arquivo para feedback
+    nome_arquivo = relatorio.nome_arquivo
+    
+    # Excluir o relatório (as negociações serão excluídas automaticamente devido ao cascade)
+    db.session.delete(relatorio)
+    db.session.commit()
+    
+    flash(f'Relatório "{nome_arquivo}" excluído com sucesso! {num_negociacoes} negociações foram removidas.', 'success')
+    return redirect(url_for('relatorios.listar'))
