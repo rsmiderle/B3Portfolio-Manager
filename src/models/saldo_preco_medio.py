@@ -8,8 +8,8 @@ class SaldoPrecoMedio(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     data_base = db.Column(db.Date, nullable=False)
-    _quantidade = db.Column('quantidade', db.String(100), nullable=False)  # Campo criptografado
-    _preco_medio = db.Column('preco_medio', db.String(100), nullable=False)  # Campo criptografado
+    _quantidade = db.Column('quantidade', db.String(512), nullable=False)  # Campo criptografado
+    _preco_medio = db.Column('preco_medio', db.String(512), nullable=False)  # Campo criptografado
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Chaves estrangeiras

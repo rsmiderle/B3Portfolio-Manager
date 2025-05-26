@@ -8,10 +8,10 @@ class Negociacao(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     data_negocio = db.Column(db.Date, nullable=False)
-    _tipo_movimentacao = db.Column('tipo_movimentacao', db.String(100), nullable=False)  # Campo criptografado
-    _mercado = db.Column('mercado', db.String(100), nullable=False)  # Campo criptografado
-    _prazo_vencimento = db.Column('prazo_vencimento', db.String(100), nullable=False)  # Campo criptografado
-    _instituicao = db.Column('instituicao', db.String(200), nullable=False)  # Campo criptografado
+    _tipo_movimentacao = db.Column('tipo_movimentacao', db.String(512), nullable=False)  # Campo criptografado
+    _mercado = db.Column('mercado', db.String(512), nullable=False)  # Campo criptografado
+    _prazo_vencimento = db.Column('prazo_vencimento', db.String(512), nullable=False)  # Campo criptografado
+    _instituicao = db.Column('instituicao', db.String(512), nullable=False)  # Campo criptografado
     quantidade = db.Column(db.Integer, nullable=False)
     preco = db.Column(db.Float, nullable=False)
     valor = db.Column(db.Float, nullable=False)

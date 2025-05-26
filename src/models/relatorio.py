@@ -7,7 +7,7 @@ class Relatorio(db.Model):
     __tablename__ = 'relatorios'
     
     id = db.Column(db.Integer, primary_key=True)
-    _nome_arquivo = db.Column('nome_arquivo', db.String(200), nullable=False)  # Campo criptografado
+    _nome_arquivo = db.Column('nome_arquivo', db.String(512), nullable=False)  # Campo criptografado
     data_upload = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Chave estrangeira para o usuário

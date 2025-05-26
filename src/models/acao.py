@@ -7,8 +7,8 @@ class Acao(db.Model):
     __tablename__ = 'acoes'
     
     id = db.Column(db.Integer, primary_key=True)
-    _codigo = db.Column('codigo', db.String(100), nullable=False)  # Campo criptografado
-    _cnpj = db.Column('cnpj', db.String(100), nullable=True)  # Campo criptografado
+    _codigo = db.Column('codigo', db.String(512), nullable=False)  # Campo criptografado
+    _cnpj = db.Column('cnpj', db.String(512), nullable=True)  # Campo criptografado
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Chave estrangeira para o usuário
