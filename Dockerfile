@@ -24,7 +24,7 @@ COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # 8. Expor a porta em que a aplicação Flask (via Gunicorn) irá rodar
-EXPOSE 5000
+EXPOSE 8080
 
 # 9. Usar o script de entrypoint para gerenciar migrações e iniciar a aplicação
 ENTRYPOINT ["/app/entrypoint.sh"]
