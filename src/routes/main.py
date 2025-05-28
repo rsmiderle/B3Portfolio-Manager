@@ -58,7 +58,7 @@ def calcular_posicao_na_data(data_base):
             Negociacao.id != None,
             SaldoPrecoMedio.id != None
         ),
-        Acao.user_id == current_user.id  # Filtrar apenas ações do usuário atual
+        Acao.user_hash == current_user.hash_id  # Filtrar apenas ações do usuário atual
     ).distinct().all()
     
     for acao in acoes:
@@ -66,7 +66,7 @@ def calcular_posicao_na_data(data_base):
         saldo_cadastrado = SaldoPrecoMedio.query.filter(
             SaldoPrecoMedio.acao_id == acao.id,
             SaldoPrecoMedio.data_base <= data_base,
-            SaldoPrecoMedio.user_id == current_user.id  # Filtrar apenas saldos do usuário atual
+            SaldoPrecoMedio.user_hash == current_user.hash_id  # Filtrar apenas saldos do usuário atual
         ).order_by(SaldoPrecoMedio.data_base.desc()).first()
         
         data_inicial = None
@@ -82,7 +82,7 @@ def calcular_posicao_na_data(data_base):
         negociacoes = Negociacao.query.filter(
             Negociacao.acao_id == acao.id,
             Negociacao.data_negocio <= data_base,
-            Negociacao.user_id == current_user.id  # Filtrar apenas negociações do usuário atual
+            Negociacao.user_hash == current_user.hash_id  # Filtrar apenas negociações do usuário atual
         )
         
         if data_inicial:

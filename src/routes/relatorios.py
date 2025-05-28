@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_wtf import FlaskForm
 from flask_login import login_required, current_user
 from wtforms import FileField, SubmitField
-from wtforms.validators import DataRequired
 from werkzeug.utils import secure_filename
 import os
 import pandas as pd
@@ -14,13 +13,13 @@ from src.models.all_models import Relatorio, Negociacao, Acao
 relatorios_bp = Blueprint('relatorios', __name__, url_prefix='/relatorios')
 
 class RelatorioForm(FlaskForm):
-    arquivo = FileField('Arquivo de Relatório B3', validators=[DataRequired()])
+    arquivo = FileField('Arquivo de Relatório B3', validators=[])
     submit = SubmitField('Enviar')
 
 @relatorios_bp.route('/', methods=['GET'])
 @login_required
 def listar():
-    relatorios = Relatorio.query.filter_by(user_id=current_user.id).order_by(Relatorio.data_upload.desc()).all()
+    relatorios = Relatorio.query.filter_by(user_hash=current_user.hash_id).order_by(Relatorio.data_upload.desc()).all()
     return render_template('relatorios/listar.html', relatorios=relatorios)
 
 @relatorios_bp.route('/upload', methods=['GET', 'POST'])
@@ -37,7 +36,7 @@ def upload():
             # Criar registro do relatório
             relatorio = Relatorio(
                 nome_arquivo=filename,
-                user_id=current_user.id
+                user_hash=current_user.hash_id
             )
             db.session.add(relatorio)
             db.session.commit()
@@ -69,7 +68,7 @@ def processar_relatorio(filepath, relatorio_id):
     # Ler o arquivo Excel
     df = pd.read_excel(filepath)
     
-    # Obter o relatório para acessar o user_id
+    # Obter o relatório para acessar o user_hash
     relatorio = Relatorio.query.get(relatorio_id)
     
     negociacoes_processadas = 0
@@ -91,11 +90,11 @@ def processar_relatorio(filepath, relatorio_id):
         if codigo_acao.endswith('F'):
             codigo_acao = codigo_acao[:-1]
             
-        acao = Acao.query.filter_by(codigo=codigo_acao, user_id=relatorio.user_id).first()
+        acao = Acao.query.filter_by(codigo=codigo_acao, user_hash=relatorio.user_hash).first()
         if not acao:
             acao = Acao(
                 codigo=codigo_acao,
-                user_id=relatorio.user_id
+                user_hash=relatorio.user_hash
             )
             db.session.add(acao)
             db.session.commit()
@@ -112,7 +111,7 @@ def processar_relatorio(filepath, relatorio_id):
             valor=row['Valor'],
             acao_id=acao.id,
             relatorio_id=relatorio_id,
-            user_id=relatorio.user_id
+            user_hash=relatorio.user_hash
         )
         
         # Tentar adicionar a negociação, ignorando se já existir uma idêntica
@@ -130,8 +129,8 @@ def processar_relatorio(filepath, relatorio_id):
 @relatorios_bp.route('/detalhes/<int:id>', methods=['GET'])
 @login_required
 def detalhes(id):
-    relatorio = Relatorio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    negociacoes = Negociacao.query.filter_by(relatorio_id=id, user_id=current_user.id).all()
+    relatorio = Relatorio.query.filter_by(id=id, user_hash=current_user.hash_id).first_or_404()
+    negociacoes = Negociacao.query.filter_by(relatorio_id=id, user_hash=current_user.hash_id).all()
     return render_template('relatorios/detalhes.html', relatorio=relatorio, negociacoes=negociacoes)
 
 @relatorios_bp.route('/excluir/<int:id>', methods=['POST'])
@@ -140,17 +139,14 @@ def excluir(id):
     """
     Exclui um relatório e todas as negociações associadas a ele
     """
-    relatorio = Relatorio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    relatorio = Relatorio.query.filter_by(id=id, user_hash=current_user.hash_id).first_or_404()
     
-    # Obter o número de negociações que serão excluídas para feedback ao usuário
-    num_negociacoes = Negociacao.query.filter_by(relatorio_id=id).count()
+    # Contar quantas negociações serão excluídas
+    negociacoes_count = Negociacao.query.filter_by(relatorio_id=id, user_hash=current_user.hash_id).count()
     
-    # Armazenar o nome do arquivo para feedback
-    nome_arquivo = relatorio.nome_arquivo
-    
-    # Excluir o relatório (as negociações serão excluídas automaticamente devido ao cascade)
+    # Excluir o relatório (as negociações serão excluídas automaticamente pelo cascade)
     db.session.delete(relatorio)
     db.session.commit()
     
-    flash(f'Relatório "{nome_arquivo}" excluído com sucesso! {num_negociacoes} negociações foram removidas.', 'success')
+    flash(f'Relatório excluído com sucesso! {negociacoes_count} negociações foram removidas.', 'success')
     return redirect(url_for('relatorios.listar'))

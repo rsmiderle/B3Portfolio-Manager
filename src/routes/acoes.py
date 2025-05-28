@@ -19,7 +19,7 @@ class AcaoForm(FlaskForm):
 @acoes_bp.route('/', methods=['GET'])
 @login_required
 def listar():
-    acoes = Acao.query.filter_by(user_id=current_user.id).all()
+    acoes = Acao.query.filter_by(user_hash=current_user.hash_id).all()
     return render_template('acoes/listar.html', acoes=acoes)
 
 @acoes_bp.route('/cadastrar', methods=['GET', 'POST'])
@@ -31,11 +31,11 @@ def cadastrar():
             codigo=form.codigo.data.upper(),
             cnpj=form.cnpj.data,
             nome_empresa=form.nome_empresa.data,
-            user_id=current_user.id
+            user_hash=current_user.hash_id
         )
         
         # Verificar se já existe para este usuário
-        acao_existente = Acao.query.filter_by(codigo=acao.codigo, user_id=current_user.id).first()
+        acao_existente = Acao.query.filter_by(codigo=acao.codigo, user_hash=current_user.hash_id).first()
         if acao_existente:
             flash(f'A ação {acao.codigo} já está cadastrada!', 'warning')
             return redirect(url_for('acoes.listar'))
@@ -50,7 +50,7 @@ def cadastrar():
 @acoes_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar(id):
-    acao = Acao.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    acao = Acao.query.filter_by(id=id, user_hash=current_user.hash_id).first_or_404()
     form = AcaoForm(obj=acao)
     
     if form.validate_on_submit():

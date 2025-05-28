@@ -25,12 +25,10 @@
                             <td>{{ relatorio.nome_arquivo }}</td>
                             <td>{{ relatorio.data_upload.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>
-                                <div class="btn-group" role="group">
-                                    <a href="{{ url_for('relatorios.detalhes', id=relatorio.id) }}" class="btn btn-sm btn-outline-info">Detalhes</a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#excluirModal{{ relatorio.id }}">
-                                        Excluir
-                                    </button>
-                                </div>
+                                <a href="{{ url_for('relatorios.detalhes', id=relatorio.id) }}" class="btn btn-sm btn-outline-info">Detalhes</a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#excluirModal{{ relatorio.id }}">
+                                    Excluir
+                                </button>
                                 
                                 <!-- Modal de confirmação de exclusão -->
                                 <div class="modal fade" id="excluirModal{{ relatorio.id }}" tabindex="-1" aria-labelledby="excluirModalLabel{{ relatorio.id }}" aria-hidden="true">
@@ -42,7 +40,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 <p>Tem certeza que deseja excluir o relatório <strong>{{ relatorio.nome_arquivo }}</strong>?</p>
-                                                <p class="text-danger">Esta ação excluirá todas as negociações associadas a este relatório e não poderá ser desfeita.</p>
+                                                <p class="text-danger">Esta ação não pode ser desfeita e todas as negociações associadas a este relatório serão excluídas.</p>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

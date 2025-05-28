@@ -19,7 +19,7 @@ class SaldoPrecoMedioForm(FlaskForm):
 @saldos_bp.route('/', methods=['GET'])
 @login_required
 def listar():
-    saldos = SaldoPrecoMedio.query.filter_by(user_id=current_user.id).order_by(SaldoPrecoMedio.data_base.desc()).all()
+    saldos = SaldoPrecoMedio.query.filter_by(user_hash=current_user.hash_id).order_by(SaldoPrecoMedio.data_base.desc()).all()
     return render_template('saldos/listar.html', saldos=saldos)
 
 @saldos_bp.route('/cadastrar', methods=['GET', 'POST'])
@@ -27,11 +27,11 @@ def listar():
 def cadastrar():
     form = SaldoPrecoMedioForm()
     # Preencher as opções do dropdown de ações - apenas ações do usuário atual
-    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.filter_by(user_id=current_user.id).order_by(Acao.codigo).all()]
+    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.filter_by(user_hash=current_user.hash_id).order_by(Acao.codigo).all()]
     
     if form.validate_on_submit():
         # Verificar se a ação pertence ao usuário atual
-        acao = Acao.query.filter_by(id=form.acao_id.data, user_id=current_user.id).first()
+        acao = Acao.query.filter_by(id=form.acao_id.data, user_hash=current_user.hash_id).first()
         if not acao:
             flash('Ação não encontrada ou não pertence ao seu cadastro!', 'danger')
             return redirect(url_for('saldos.listar'))
@@ -40,7 +40,7 @@ def cadastrar():
         saldo_existente = SaldoPrecoMedio.query.filter_by(
             acao_id=form.acao_id.data,
             data_base=form.data_base.data,
-            user_id=current_user.id
+            user_hash=current_user.hash_id
         ).first()
         
         if saldo_existente:
@@ -52,7 +52,7 @@ def cadastrar():
             data_base=form.data_base.data,
             quantidade=form.quantidade.data,
             preco_medio=form.preco_medio.data,
-            user_id=current_user.id
+            user_hash=current_user.hash_id
         )
         
         db.session.add(saldo)
@@ -66,14 +66,14 @@ def cadastrar():
 @login_required
 def editar(id):
     # Garantir que o saldo pertence ao usuário atual
-    saldo = SaldoPrecoMedio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    saldo = SaldoPrecoMedio.query.filter_by(id=id, user_hash=current_user.hash_id).first_or_404()
     form = SaldoPrecoMedioForm(obj=saldo)
     # Mostrar apenas ações do usuário atual
-    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.filter_by(user_id=current_user.id).order_by(Acao.codigo).all()]
+    form.acao_id.choices = [(a.id, a.codigo) for a in Acao.query.filter_by(user_hash=current_user.hash_id).order_by(Acao.codigo).all()]
     
     if form.validate_on_submit():
         # Verificar se a ação pertence ao usuário atual
-        acao = Acao.query.filter_by(id=form.acao_id.data, user_id=current_user.id).first()
+        acao = Acao.query.filter_by(id=form.acao_id.data, user_hash=current_user.hash_id).first()
         if not acao:
             flash('Ação não encontrada ou não pertence ao seu cadastro!', 'danger')
             return redirect(url_for('saldos.listar'))
@@ -83,7 +83,7 @@ def editar(id):
             SaldoPrecoMedio.acao_id == form.acao_id.data,
             SaldoPrecoMedio.data_base == form.data_base.data,
             SaldoPrecoMedio.id != id,
-            SaldoPrecoMedio.user_id == current_user.id
+            SaldoPrecoMedio.user_hash == current_user.hash_id
         ).first()
         
         if saldo_existente:
@@ -105,7 +105,7 @@ def editar(id):
 @login_required
 def excluir(id):
     # Garantir que o saldo pertence ao usuário atual
-    saldo = SaldoPrecoMedio.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    saldo = SaldoPrecoMedio.query.filter_by(id=id, user_hash=current_user.hash_id).first_or_404()
     db.session.delete(saldo)
     db.session.commit()
     flash('Saldo excluído com sucesso!', 'success')

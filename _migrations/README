@@ -1,0 +1,42 @@
+# Migrações de Banco de Dados
+
+Este diretório contém as migrações de banco de dados gerenciadas pelo Flask-Migrate.
+
+## Comandos para gerenciar migrações
+
+### Inicializar o repositório de migrações (primeira vez)
+```
+flask db init
+```
+
+### Criar uma nova migração
+```
+flask db migrate -m "descrição da migração"
+```
+
+### Aplicar migrações pendentes
+```
+flask db upgrade
+```
+
+### Reverter a última migração
+```
+flask db downgrade
+```
+
+## Fluxo de trabalho recomendado
+
+1. Após alterar modelos, gere uma nova migração
+2. Revise o arquivo de migração gerado
+3. Aplique a migração no ambiente de desenvolvimento
+4. Teste as alterações
+5. Aplique a migração no ambiente de produção
+
+## Importante para produção
+
+Em ambiente de produção, nunca use `db.create_all()`. Sempre aplique as migrações usando:
+```
+flask db upgrade
+```
+
+Isso garante que o esquema do banco de dados seja atualizado de forma controlada e segura.

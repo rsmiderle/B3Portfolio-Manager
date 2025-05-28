@@ -19,10 +19,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 6. Copiar todo o código da aplicação para o diretório de trabalho (/app)
 COPY . .
 
-# 7. Expor a porta em que a aplicação Flask (via Gunicorn) irá rodar
+# 7. Copiar o script de entrypoint e torná-lo executável
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# 8. Expor a porta em que a aplicação Flask (via Gunicorn) irá rodar
 EXPOSE 5000
 
-# 8. Comando para iniciar a aplicação, executando primeiro as migrações
-# Este comando executa o run.py que contém a lógica de automação das migrações
-# antes de iniciar o servidor Gunicorn
-CMD python run.py && gunicorn --bind "0.0.0.0:${PORT:-5000}" --workers 2 "src.main:create_app()"
+# 9. Usar o script de entrypoint para gerenciar migrações e iniciar a aplicação
+ENTRYPOINT ["/app/entrypoint.sh"]

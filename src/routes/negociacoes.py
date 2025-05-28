@@ -20,7 +20,7 @@ def listar():
     filtro_sem_corretagem = request.args.get('sem_corretagem', 'false') == 'true'
     
     # Consulta base - filtrar apenas negociações do usuário atual
-    query = Negociacao.query.join(Acao, Negociacao.acao_id == Acao.id).filter(Negociacao.user_id == current_user.id)
+    query = Negociacao.query.join(Acao, Negociacao.acao_id == Acao.id).filter(Negociacao.user_hash == current_user.hash_id)
     
     # Aplicar filtro se solicitado
     if filtro_sem_corretagem:
@@ -37,7 +37,7 @@ def listar():
 @login_required
 def editar(id):
     # Garantir que a negociação pertence ao usuário atual
-    negociacao = Negociacao.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    negociacao = Negociacao.query.filter_by(id=id, user_hash=current_user.hash_id).first_or_404()
     form = NegociacaoForm(obj=negociacao)
     
     if form.validate_on_submit():
