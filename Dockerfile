@@ -19,12 +19,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 6. Copiar todo o código da aplicação para o diretório de trabalho (/app)
 COPY . .
 
-# 7. Copiar o script de entrypoint e torná-lo executável
-COPY entrypoint.sh /app/entrypoint.sh
+# 7. Copiar o script de entrypoint simplificado e torná-lo executável
+COPY entrypoint_simplificado.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # 8. Expor a porta em que a aplicação Flask (via Gunicorn) irá rodar
+# Alterado para 8080 para compatibilidade com Cloud Run
 EXPOSE 8080
 
-# 9. Usar o script de entrypoint para gerenciar migrações e iniciar a aplicação
+# 9. Usar o script de entrypoint para iniciar a aplicação
 ENTRYPOINT ["/app/entrypoint.sh"]
