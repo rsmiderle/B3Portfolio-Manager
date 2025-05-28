@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel de Administração{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Painel de Administração</h1>
+    
+    <div class="alert alert-info">
+        <strong>Usuário administrador:</strong> {{ current_user.email }}
+    </div>
+    
+    <div class="row">
+        <!-- Estatísticas do Sistema -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Estatísticas do Sistema</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="display-4">{{ system_stats.total_users }}</h3>
+                                    <p class="text-muted mb-0">Usuários Cadastrados</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="display-4">{{ "R$ {:,.2f}".format(system_stats.total_transactions_value).replace(',', '.').replace('.', ',') }}</h3>
+                                    <p class="text-muted mb-0">Valor Total de Negociações</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="display-4">{{ system_stats.total_transactions }}</h3>
+                                    <p class="text-muted mb-0">Total de Negociações</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="display-4">{{ "R$ {:,.2f}".format(system_stats.avg_transaction_value).replace(',', '.').replace('.', ',') }}</h3>
+                                    <p class="text-muted mb-0">Valor Médio por Negociação</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informações do Banco de Dados -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Informações do Banco de Dados</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Tipo:</strong> {{ db_info.type }}</p>
+                    <p><strong>Status:</strong> {{ db_info.status }}</p>
+                    <p><strong>Tabelas:</strong> {{ db_info.tables|length }}</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome da Tabela</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for table in db_info.tables %}
+                                <li>{{ table }}</li>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Informações de Migração -->
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0">Informações de Migração</h5>
+                </div>
+                <div class="card-body">
+                    {% if migration_info.has_migrations %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>Versão atual:</strong> {{ migration_info.current_version }}</p>
+                                <p><strong>Última migração:</strong> {{ migration_info.last_migration_date }}</p>
+                                <p><strong>Total de versões:</strong> {{ migration_info.versions|length }}</p>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Versão</th>
+                                                <th>Descrição</th>
+                                                <th>Data</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for version in migration_info.versions %}
+                                            <tr>
+                                                <td>{{ version.id }}</td>
+                                                <td>{{ version.description }}</td>
+                                                <td>{{ version.date }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>Nenhuma migração encontrada.</p>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('admin.migrations') }}" class="btn btn-primary mt-3">
+                        Gerenciar Migrações
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

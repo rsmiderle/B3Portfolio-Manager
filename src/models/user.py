@@ -38,5 +38,14 @@ class User(db.Model, UserMixin):
         hash_input = f"{self.google_id}{salt}"
         self.hash_id = hashlib.sha256(hash_input.encode()).hexdigest()
     
+    def is_admin(self):
+        """Verifica se o usuário é administrador com base na variável de ambiente ADMIN_EMAIL"""
+        admin_email = os.environ.get('ADMIN_EMAIL')
+        if not admin_email:
+            return False
+        
+        # Compara o email do usuário com o email de administrador definido na variável de ambiente
+        return self.email.lower() == admin_email.lower()
+    
     def __repr__(self):
         return f'<User {self.email}>'

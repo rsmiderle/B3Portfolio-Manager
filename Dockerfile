@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 7. Copiar o script de entrypoint simplificado e torná-lo executável
-COPY entrypoint_simplificado.sh /app/entrypoint.sh
+COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # 8. Expor a porta em que a aplicação Flask (via Gunicorn) irá rodar

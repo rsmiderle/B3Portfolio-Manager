@@ -2,73 +2,135 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>B3 Portfolio Manager</h1>
-    <p class="lead">Bem-vindo ao sistema de gerenciamento de portfólio de ações da B3.</p>
-    
-    <div class="row mt-4">
-        <div class="col-md-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
             <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">Bem-vindo ao B3 Portfolio Manager</h1>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Relatórios B3</h5>
-                    <p class="card-text">Faça upload de relatórios de negociações da B3.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('relatorios.upload') }}" class="btn btn-primary">Upload de Relatório</a>
-                        <a href="{{ url_for('relatorios.listar') }}" class="btn btn-outline-secondary">Listar Relatórios</a>
+                    <h2 class="h5 mb-4">Olá, {{ current_user.name }}!</h2>
+                    
+                    <div class="alert alert-info">
+                        <p class="mb-0">Siga o fluxo de trabalho abaixo para gerenciar suas ações e calcular seu relatório de posição para o Imposto de Renda.</p>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Ações</h5>
-                    <p class="card-text">Gerencie o cadastro de ações e seus CNPJs.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('acoes.cadastrar') }}" class="btn btn-primary">Cadastrar Ação</a>
-                        <a href="{{ url_for('acoes.listar') }}" class="btn btn-outline-secondary">Listar Ações</a>
+                    
+                    <div class="workflow-container mt-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card workflow-step">
+                                    <div class="card-header bg-light">
+                                        <h3 class="h5 mb-0">Primeiro</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <i class="fas fa-file-upload fa-3x text-primary"></i>
+                                        </div>
+                                        <p>Importe os relatórios de negociação da B3. Emita seus relatórios de negociação na área de investidor da B3 e faça upload aqui para calcular sua posição e preço médio.</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ url_for('relatorios.listar') }}" class="btn btn-primary">Relatórios B3</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="card workflow-step">
+                                    <div class="card-header bg-light">
+                                        <h3 class="h5 mb-0">Segundo</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <i class="fas fa-money-bill-wave fa-3x text-success"></i>
+                                        </div>
+                                        <p>Cadastre suas despesas com corretagem (opcional). A Receita Federal permite que você adicione os valores com corretagem no cálculo do preço médio das ações, obtendo maior benefício.</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ url_for('negociacoes.listar') }}" class="btn btn-success">Corretagens</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="card workflow-step">
+                                    <div class="card-header bg-light">
+                                        <h3 class="h5 mb-0">Saldos Iniciais</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <i class="fas fa-balance-scale fa-3x text-warning"></i>
+                                        </div>
+                                        <p>Caso você tenha posições anteriores aos relatórios de negociação da B3, você poderá cadastrá-los aqui.</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ url_for('saldos.listar') }}" class="btn btn-warning">Saldos Iniciais</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="card workflow-step">
+                                    <div class="card-header bg-light">
+                                        <h3 class="h5 mb-0">Terceiro</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <i class="fas fa-file-alt fa-3x text-danger"></i>
+                                        </div>
+                                        <p>Emita o relatório de posição IR informando a data-base que deseja considerar para calcular o saldo e preço médio das suas ações.</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ url_for('main.gerar_relatorio') }}" class="btn btn-danger">Relatório de Posição IR</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Saldos e Preços Médios</h5>
-                    <p class="card-text">Cadastre saldos e preços médios para datas base.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('saldos.cadastrar') }}" class="btn btn-primary">Cadastrar Saldo</a>
-                        <a href="{{ url_for('saldos.listar') }}" class="btn btn-outline-secondary">Listar Saldos</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Gerar Relatório de Posição</h5>
-                    <p class="card-text">Gere um relatório da sua posição de ações em uma data base específica.</p>
-                    <a href="{{ url_for('main.gerar_relatorio') }}" class="btn btn-success">Gerar Relatório</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Manutenção de Negociações</h5>
-                    <p class="card-text">Informe valores de corretagem para as negociações importadas.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('negociacoes.listar') }}" class="btn btn-primary">Gerenciar Corretagens</a>
-                        <a href="{{ url_for('negociacoes.listar', sem_corretagem='true') }}" class="btn btn-outline-secondary">Ver Pendentes</a>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h3 class="h5 mb-0">Ferramentas Adicionais</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p>Acesse informações sobre CNPJs das empresas:</p>
+                                    <a href="{{ url_for('acoes.listar') }}" class="btn btn-outline-primary">CNPJs</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if is_admin %}
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-dark text-white">
+                                    <h3 class="h5 mb-0">Administração</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p>Você tem acesso ao painel de administração do sistema.</p>
+                                    <a href="{{ url_for('admin.index') }}" class="btn btn-dark">
+                                        Acessar Painel de Administração
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.workflow-step {
+    height: 100%;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.workflow-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+</style>
 {% endblock %}
