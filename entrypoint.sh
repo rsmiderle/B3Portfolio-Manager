@@ -60,7 +60,7 @@ if apply_migrations; then
     # Iniciar a aplicação
     echo "Iniciando aplicação..."
     if [ -z "$PORT" ]; then
-      export PORT=5000
+      export PORT=8080
     fi
     
     exec gunicorn --bind "0.0.0.0:$PORT" --workers 2 "src.main:create_app()"
